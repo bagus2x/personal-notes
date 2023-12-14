@@ -1,15 +1,15 @@
+import AddIcon from '@mui/icons-material/Add'
 import MenuIcon from '@mui/icons-material/Menu'
 import SearchIcon from '@mui/icons-material/Search'
-import AddIcon from '@mui/icons-material/Add'
-import Container from '@mui/material/Container'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import InputBase from '@mui/material/InputBase'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { alpha, styled } from '@mui/material/styles'
-import * as React from 'react'
+import PropTypes from 'prop-types'
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -40,7 +40,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -53,7 +52,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   }
 }))
 
-export default function SearchAppBar({ onSearch, onAdd }) {
+const SearchAppBar = ({ onSearch, onAdd }) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="primary" elevation={1}>
@@ -100,3 +99,10 @@ export default function SearchAppBar({ onSearch, onAdd }) {
     </Box>
   )
 }
+
+SearchAppBar.propTypes = {
+  onSearch: PropTypes.func,
+  onAdd: PropTypes.func.isRequired
+}
+
+export default SearchAppBar
