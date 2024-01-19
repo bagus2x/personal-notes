@@ -6,11 +6,11 @@ import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import dayjs from 'dayjs'
+import { motion } from 'framer-motion'
 import PropTypes from 'prop-types'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import NoteEditorDialog from './NoteEditorDialog'
-import { motion } from 'framer-motion'
 
 const animations = {
   initial: { scale: 0, opacity: 0 },
@@ -27,13 +27,12 @@ const CardItem = ({
   createdAt,
   onArchive,
   onUnarchive,
-  onDelete,
-  onEdit
+  onDelete
 }) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const openMenu = Boolean(anchorEl)
   const escapedBody = useMemo(() => body.replace(/(<([^>]+)>)/gi, ''), [body])
-  const [openEditor, setOpenEditor] = useState(false)
+  const { t } = useTranslation()
 
   return (
     <Card component={motion.div} {...animations}>
@@ -63,12 +62,12 @@ const CardItem = ({
       <CardActions sx={{ justifyContent: 'end' }}>
         {archived && (
           <Button size="small" onClick={onUnarchive}>
-            Mark as unarchived
+            {t('mark as unarchived')}
           </Button>
         )}
         {!archived && (
           <Button size="small" onClick={onArchive}>
-            Mark as archived
+            {t('mark as archived')}
           </Button>
         )}
         <IconButton
@@ -93,14 +92,6 @@ const CardItem = ({
         >
           <MenuItem
             onClick={() => {
-              setOpenEditor(true)
-              setAnchorEl(null)
-            }}
-          >
-            Edit
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
               setAnchorEl(null)
               onDelete?.()
             }}
@@ -109,12 +100,6 @@ const CardItem = ({
           </MenuItem>
         </Menu>
       </CardActions>
-      <NoteEditorDialog
-        id={id}
-        open={openEditor}
-        onClose={() => setOpenEditor(false)}
-        onSave={onEdit}
-      />
     </Card>
   )
 }
@@ -127,8 +112,7 @@ CardItem.propTypes = {
   createdAt: PropTypes.string.isRequired,
   onArchive: PropTypes.func,
   onUnarchive: PropTypes.func,
-  onDelete: PropTypes.func.isRequired,
-  onEdit: PropTypes.func.isRequired
+  onDelete: PropTypes.func.isRequired
 }
 
 export default CardItem

@@ -17,14 +17,22 @@
     "@fontsource/roboto": "^5.0.8",
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.18",
+    "@tanstack/react-query": "^5.17.15",
+    "axios": "^1.6.5",
+    "country-flag-icons": "^1.5.9",
     "dayjs": "^1.11.10",
     "framer-motion": "^10.16.16",
+    "i18next": "^23.7.16",
     "interweave": "^13.1.0",
     "material-ui-confirm": "^3.0.9",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^14.0.0",
     "react-router-dom": "^6.21.0",
-    "sonner": "^1.2.3"
+    "rtl-detect": "^1.1.2",
+    "sonner": "^1.2.3",
+    "stylis": "^4.3.1",
+    "stylis-plugin-rtl": "^2.1.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",

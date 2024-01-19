@@ -1,35 +1,30 @@
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
+import { Fullscreen } from '@mui/icons-material'
 import { Box, IconButton } from '@mui/material'
 import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import TextField from '@mui/material/TextField'
 import PropTypes from 'prop-types'
-import { useMemo, useState } from 'react'
-import { toast } from 'sonner'
-import { getNote } from '../utils/local-data'
-import { useEffect } from 'react'
-import { Fullscreen } from '@mui/icons-material'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { useGetSingleNote } from '../hooks/note'
 
 const NoteEditorDialog = ({ id, open, onSave, onClose }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const note = useMemo(() => getNote(id), [id, open])
+  const { data: note } = useGetSingleNote(id)
   const [title, setTitle] = useState(note?.title || '')
   const [body, setBody] = useState(note?.body || '')
-  const [archived, setArchived] = useState(!!note?.archived)
   const navigate = useNavigate()
 
   useEffect(() => {
     if (open) {
       setTitle(note?.title || '')
       setBody(note?.body || '')
-      setArchived(!!note?.archived)
     }
   }, [open, note])
 
@@ -42,11 +37,9 @@ const NoteEditorDialog = ({ id, open, onSave, onClose }) => {
     }
 
     onSave({
-      id: id || new Date().getTime(),
+      id,
       title,
-      body,
-      archived,
-      createdAt: new Date().toISOString()
+      body
     })
 
     toast.success('Note successfully saved!')
@@ -56,7 +49,6 @@ const NoteEditorDialog = ({ id, open, onSave, onClose }) => {
   const handleClose = () => {
     setTitle('')
     setBody('')
-    setArchived(false)
     if (onClose) {
       onClose()
     } else {
@@ -102,7 +94,7 @@ const NoteEditorDialog = ({ id, open, onSave, onClose }) => {
             value={title}
             onChange={(ev) => setTitle(ev.target.value)}
           />
-          <Box sx={{ my: 2 }}>
+          <Box sx={{ my: 2, color: 'black' }}>
             <CKEditor
               editor={ClassicEditor}
               data={body}
@@ -111,13 +103,6 @@ const NoteEditorDialog = ({ id, open, onSave, onClose }) => {
               }}
             />
           </Box>
-          <FormControlLabel
-            control={<Checkbox />}
-            label="Archived"
-            checked={archived}
-            onChange={(ev) => setArchived(ev.target.checked)}
-            name="archived"
-          />
         </DialogContent>
         <DialogActions>
           <Button type="button" onClick={handleClose}>

@@ -2,9 +2,12 @@ import { Home } from '@mui/icons-material'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
 export default function NotFoundPage() {
+  const { t } = useTranslation()
+
   return (
     <Container
       maxWidth="xl"
@@ -17,7 +20,7 @@ export default function NotFoundPage() {
       }}
     >
       <Typography variant="h3" component="h1">
-        Not Found
+        {t('not found')}
       </Typography>
       <Button
         component={Link}
@@ -27,7 +30,7 @@ export default function NotFoundPage() {
       >
         <Home sx={{ mr: 1 }} fontSize="small" />
         <span style={{ display: 'flex', alignItems: 'center', marginTop: 2 }}>
-          Back
+          {t('back')}
         </span>
       </Button>
     </Container>

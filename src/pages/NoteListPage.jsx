@@ -6,86 +6,93 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { AnimatePresence } from 'framer-motion'
 import { useConfirm } from 'material-ui-confirm'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import NoteEditorDialog from '../components/NoteEditorDialog'
 import CardItem from '../components/NoteItem'
 import SearchAppBar from '../components/SearchAppBar'
 import {
-  addNote,
-  archiveNote,
-  deleteNote,
-  editNote,
-  getActiveNotes,
-  getAllNotes,
-  getArchivedNotes,
-  unarchiveNote
-} from '../utils/local-data'
+  useArchiveNote,
+  useCreateNote,
+  useDeleteNote,
+  useGetArchivedNotes,
+  useGetNotes,
+  useUnarchiveNote
+} from '../hooks/note'
+import CircularProgress from '@mui/material/CircularProgress'
+import { useTranslation } from 'react-i18next'
 
 export default function NoteListPage() {
   const [query, setQuery] = useState('')
   const [openDialog, setOpenDialog] = useState(false)
   const [tabValue, setTabValue] = useState(0)
-  const [notes, setNotes] = useState(getAllNotes())
-  const filteredNotes = useMemo(() => {
-    return notes.filter((note) => {
-      return (
-        note.title.toLowerCase().includes(query.toLowerCase()) ||
-        note.body.toLowerCase().includes(query.toLowerCase())
-      )
-    })
-  }, [notes, query])
-
-  const refreshNotes = useCallback(() => {
-    setNotes(() => {
-      if (tabValue === 0) return getAllNotes()
-      else if (tabValue === 1) return getActiveNotes()
-      else return getArchivedNotes()
-    })
-  }, [tabValue])
-
-  useEffect(() => {
-    refreshNotes()
-  }, [refreshNotes, tabValue])
-
+  const { data: nonArchivedNotes, ...getNotes } = useGetNotes()
+  const { data: archivedNotes, ...getArchivedNotes } = useGetArchivedNotes()
+  const filtered = useMemo(() => {
+    return {
+      nonArchived:
+        nonArchivedNotes?.filter((note) => {
+          return (
+            note.title.toLowerCase().includes(query.toLowerCase()) ||
+            note.body.toLowerCase().includes(query.toLowerCase())
+          )
+        }) || [],
+      archived:
+        archivedNotes?.filter((note) => {
+          return (
+            note.title.toLowerCase().includes(query.toLowerCase()) ||
+            note.body.toLowerCase().includes(query.toLowerCase())
+          )
+        }) || []
+    }
+  }, [nonArchivedNotes, archivedNotes, query])
+  const notes = tabValue === 0 ? filtered.nonArchived : filtered.archived
+  const create = useCreateNote()
+  const archive = useArchiveNote()
+  const unarchiveNote = useUnarchiveNote()
+  const deleteNote = useDeleteNote()
   const confirm = useConfirm()
+  const { t } = useTranslation()
 
   const handleChangeTab = (_, newValue) => {
     setTabValue(newValue)
-    refreshNotes()
   }
 
   const handleAddNote = (note) => {
-    addNote(note)
-    refreshNotes()
+    create.mutate(note, {
+      onSuccess: () => {
+        toast.success(t('note has been created'))
+      }
+    })
   }
 
   const handleArchive = (id) => () => {
-    archiveNote(id)
-    toast.success('Note is archived')
-    refreshNotes()
+    archive.mutate(id, {
+      onSuccess: () => {
+        toast.success(t('note has been archived'))
+      }
+    })
   }
 
   const handleUnarchive = (id) => () => {
-    unarchiveNote(id)
-    toast.success('Note is not archived')
-    refreshNotes()
+    unarchiveNote.mutate(id, {
+      onSuccess: () => {
+        toast.success(t('note has been unarchived'))
+      }
+    })
   }
 
   const handleDelete = (id) => () => {
     confirm({
-      title: 'Are you sure you want to delete this note?',
-      description: 'This action is permanent!'
+      title: t('are you sure you want to delete this note'),
+      description: t('this action is permanent')
     }).then(() => {
-      deleteNote(id)
-      toast.success('Note successfully deleted')
-      refreshNotes()
+      deleteNote.mutate(id, {
+        onSuccess: () => {
+          toast.success(t('note has been deleted'))
+        }
+      })
     })
-  }
-
-  const handleEdit = (note) => {
-    editNote(note)
-    refreshNotes()
   }
 
   return (
@@ -103,22 +110,28 @@ export default function NoteListPage() {
             onChange={handleChangeTab}
             aria-label="basic tabs example"
           >
-            <Tab label="All" />
-            <Tab label="Unarchived" />
-            <Tab label="Archived" />
+            <Tab label={t('non archived')} />
+            <Tab label={t('archived')} />
           </Tabs>
         </Box>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          {filteredNotes.length === 0 &&
+          {notes.length === 0 &&
             (query ? (
-              <Typography>
-                Notes with &quot;{query}&quot; not found in this tab
+              <Typography sx={{ textAlign: 'center', width: '100%' }}>
+                {t('notes empty with query', {
+                  query,
+                  tab: tabValue === 0 ? t('non archived') : t('archived')
+                })}
               </Typography>
             ) : (
-              <Typography>Notes are empty in this tab</Typography>
+              <Typography sx={{ textAlign: 'center', width: '100%' }}>
+                {t('notes empty', {
+                  tab: tabValue === 0 ? t('non archived') : t('archived')
+                })}
+              </Typography>
             ))}
           <AnimatePresence>
-            {filteredNotes.map((note) => (
+            {notes.map((note) => (
               <Grid item key={note.id} sm={6} xs={12} md={4} lg={3}>
                 <CardItem
                   key={note.id}
@@ -126,13 +139,28 @@ export default function NoteListPage() {
                   onArchive={handleArchive(note.id)}
                   onUnarchive={handleUnarchive(note.id)}
                   onDelete={handleDelete(note.id)}
-                  onEdit={handleEdit}
                 />
               </Grid>
             ))}
           </AnimatePresence>
         </Grid>
       </Container>
+      {(getArchivedNotes.isLoading ||
+        getNotes.isLoading ||
+        create.isLoading ||
+        archive.isLoading ||
+        unarchiveNote.isLoading ||
+        deleteNote.isLoading) && (
+        <CircularProgress
+          sx={{
+            position: 'absolute',
+            zIndex: 99999,
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%,-50%)'
+          }}
+        />
+      )}
     </Box>
   )
 }

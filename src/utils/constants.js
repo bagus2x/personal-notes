@@ -1,0 +1,5 @@
+export const BASE_URL = 'https://notes-api.dicoding.dev/v1'
+export const ACCESS_TOKEN_KEY = 'access-token'
+export const THEME_MODE = 'theme_mode'
+export const LANGUAGE = 'language'
+export const DIRECTION_MODE = 'direction_mode'

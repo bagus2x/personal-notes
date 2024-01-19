@@ -1,0 +1,30 @@
+{
+  "translation": {
+    "register": "Daftar",
+    "login": "Masuk",
+    "archived": "Diarsipkan",
+    "non archived": "Tidak Diarsipkan",
+    "mark as archived": "Arsipkan",
+    "mark as unarchived": "Batalkan pengarsipan",
+    "delete": "Hapus",
+    "dark": "Gelap",
+    "light": "Terang",
+    "log out": "Keluar",
+    "change language": "Ubah bahasa",
+    "choose language": "Pilih bahasa",
+    "already have an account": "Sudah punya akun? Masuk",
+    "back": "Kembali",
+    "not found": "Tidak ditemukan",
+    "unknown error": "Kesalahan tidak diketahui",
+    "user has been logged in": "Pengguna telah masuk",
+    "user has been registered": "Pengguna telah terdaftar",
+    "note has been created": "Catatan telah dibuat",
+    "note has been archived": "Catatan telah diarsipkan",
+    "note has been unarchived": "Catatan telah dibatalkan pengarsipan",
+    "note has been deleted": "Catatan telah dihapus",
+    "are you sure you want to delete this note": "Apakah Anda yakin ingin menghapus catatan ini?",
+    "this action is permanent": "Tindakan ini bersifat permanen",
+    "notes empty with query": "Catatan dengan {{ query }} tidak ditemukan di {{ tab }}",
+    "notes empty": "Catatan tidak ditemukan di {{ tab }}"
+  }
+}

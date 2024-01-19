@@ -1,19 +1,35 @@
-import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { getNote } from '../utils/local-data'
-import Container from '@mui/material/Container'
+
 import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import dayjs from 'dayjs'
-import Divider from '@mui/material/Divider'
 import { Interweave } from 'interweave'
+import { useGetSingleNote } from '../hooks/note'
 import NotFoundPage from './NotFoundPage'
+import CircularProgress from '@mui/material/CircularProgress'
 
 export default function NoteDetailPage() {
   const { id } = useParams()
-  const note = useMemo(() => getNote(id), [id])
+  const { data: note, isLoading } = useGetSingleNote(id)
 
-  if (!note) {
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          width: '100vw',
+          height: '100vh',
+          display: 'grid',
+          placeItems: 'center'
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    )
+  }
+
+  if (!note && !isLoading) {
     return <NotFoundPage />
   }
 
